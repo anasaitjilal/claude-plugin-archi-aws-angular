@@ -1,0 +1,92 @@
+@use 'styles/tokens';
+
+// Police auto-hébergée (exemple) : déposer le woff2 dans public/fonts/ puis décommenter, et ajouter
+// <link rel="preload" href="/fonts/site-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+// dans index.html pour la seule police du titre.
+// @font-face {
+//   font-family: 'Site Sans';
+//   src: url('/fonts/site-sans-latin.woff2') format('woff2');
+//   font-weight: 100 900;
+//   font-display: swap;
+// }
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: light;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: 1.6;
+  color: var(--color-ink);
+  background: var(--color-bg);
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.1;
+  margin: 0;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: var(--text-h1);
+}
+
+h2 {
+  font-size: var(--text-h2);
+}
+
+p {
+  margin: 0;
+  max-width: 68ch;
+}
+
+a {
+  color: var(--color-accent);
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform var(--duration-fast) var(--ease-out);
+
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
+.button--primary {
+  background: var(--color-action);
+  color: var(--color-on-action);
+}
+
+.button--whatsapp {
+  background: var(--color-whatsapp);
+  color: #fff;
+}

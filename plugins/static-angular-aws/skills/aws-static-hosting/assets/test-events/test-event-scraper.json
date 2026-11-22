@@ -1,0 +1,20 @@
+{
+  "version": "1.0",
+  "context": {
+    "eventType": "viewer-request"
+  },
+  "viewer": {
+    "ip": "198.51.100.10"
+  },
+  "request": {
+    "method": "GET",
+    "uri": "/a-propos",
+    "querystring": {},
+    "headers": {
+      "user-agent": {
+        "value": "curl/8.5.0"
+      }
+    },
+    "cookies": {}
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "static-angular-aws",
+  "displayName": "Static Angular AWS",
+  "version": "1.0.0",
+  "description": "Sites vitrines et catalogues statiques Angular (SSG, signals, i18n) sur S3 + CloudFront quasi gratuit : scaffold, design sobre, GSAP, performance, SEO, CloudFront Function, déploiement GitHub Actions OIDC, commande WhatsApp, admin serverless.",
+  "author": {
+    "name": "Anass Ait Jilal",
+    "url": "https://github.com/anasaitjilal"
+  },
+  "repository": "https://github.com/anasaitjilal/claude-plugins",
+  "license": "MIT",
+  "keywords": ["angular", "ssg", "aws", "s3", "cloudfront", "github-actions", "oidc", "seo", "lighthouse", "gsap", "whatsapp"]
+}

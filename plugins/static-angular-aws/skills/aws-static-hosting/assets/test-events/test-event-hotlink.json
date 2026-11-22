@@ -1,0 +1,23 @@
+{
+  "version": "1.0",
+  "context": {
+    "eventType": "viewer-request"
+  },
+  "viewer": {
+    "ip": "198.51.100.10"
+  },
+  "request": {
+    "method": "GET",
+    "uri": "/images/products/exemple/00000000-0000-4000-8000-000000000000-800.webp",
+    "querystring": {},
+    "headers": {
+      "user-agent": {
+        "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+      },
+      "referer": {
+        "value": "https://concurrent.example/catalogue"
+      }
+    },
+    "cookies": {}
+  }
+}

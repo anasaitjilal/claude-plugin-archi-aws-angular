@@ -1,0 +1,8 @@
+{
+  "name": "{{SITE_NAME}}",
+  "email": "{{CONTACT_EMAIL}}",
+  "phone": null,
+  "address": null,
+  "openingHours": null,
+  "sameAs": []
+}

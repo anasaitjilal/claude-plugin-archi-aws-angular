@@ -1,0 +1,17 @@
+{
+  "Name": "limite-par-ip",
+  "Priority": 10,
+  "Action": { "Count": {} },
+  "Statement": {
+    "RateBasedStatement": {
+      "Limit": 2000,
+      "EvaluationWindowSec": 300,
+      "AggregateKeyType": "IP"
+    }
+  },
+  "VisibilityConfig": {
+    "SampledRequestsEnabled": true,
+    "CloudWatchMetricsEnabled": true,
+    "MetricName": "limite-par-ip"
+  }
+}

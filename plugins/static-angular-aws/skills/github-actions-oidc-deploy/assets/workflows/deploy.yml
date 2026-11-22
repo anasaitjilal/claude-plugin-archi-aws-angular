@@ -1,0 +1,119 @@
+# Déploiement production : build (prérendu) -> S3 -> invalidation CloudFront.
+# AWS par OIDC (aucune clé stockée). Variables de l'environnement GitHub « production » :
+#   AWS_ROLE_ARN, AWS_REGION, S3_BUCKET (nom seul), CLOUDFRONT_DISTRIBUTION_ID, SITE_URL (facultatif).
+# Pas de lint ni de tests ici : ci.yml les exécute sur chaque pull request.
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'infra/**'
+      - '.github/workflows/ci.yml'
+  workflow_dispatch:
+  # Rebuild nocturne (nightly-rebuild.yml) si les données publiées ont changé.
+  workflow_call:
+
+# Les déploiements se suivent sans s'annuler : le dernier en attente contient tout.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    name: Build et déploiement
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: production
+      url: ${{ vars.SITE_URL }}
+    env:
+      S3_BUCKET: ${{ vars.S3_BUCKET }}
+      DISTRIBUTION_ID: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
+      SITE: web/dist/{{PROJECT}}/browser
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: web/.nvmrc
+
+      - name: Cache node_modules
+        id: node-modules
+        uses: actions/cache@v6
+        with:
+          path: web/node_modules
+          key: node-modules-${{ runner.os }}-${{ hashFiles('web/package-lock.json', 'web/.nvmrc') }}
+
+      - name: Installer les dépendances
+        if: steps.node-modules.outputs.cache-hit != 'true'
+        working-directory: web
+        run: npm ci --no-audit --no-fund
+
+      # Clé stable : enregistré une fois par version des dépendances, puis seulement relu.
+      - name: Cache de compilation Angular
+        uses: actions/cache@v6
+        with:
+          path: web/.angular/cache
+          key: angular-${{ hashFiles('web/package-lock.json') }}
+          restore-keys: angular-
+
+      - name: Vérifier la configuration
+        run: |
+          for v in S3_BUCKET DISTRIBUTION_ID; do
+            if [ -z "${!v}" ]; then echo "::error::Variable manquante : $v (environnement production)"; exit 1; fi
+          done
+          case "$S3_BUCKET" in arn:*|s3://*) echo "::error::S3_BUCKET = nom du bucket seul (sans arn: ni s3://)"; exit 1;; esac
+          if grep -rqE '\{\{[A-Z_]+\}\}' site.config.mjs web/src/environments 2>/dev/null; then
+            echo "::error::Placeholder {{…}} restant dans la configuration"; exit 1
+          fi
+
+      - uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      # Avec un catalogue publié par l'admin (skill json-catalog-data) : récupérer live/ ici.
+      # - name: Données publiées
+      #   run: node scripts/fetch-data.mjs
+
+      - name: Contrôle des données
+        run: node scripts/validate-data.mjs
+
+      - name: Build (prérendu)
+        working-directory: web
+        run: npm run build
+
+      - name: Contrôle SEO des pages prérendues
+        run: node scripts/check-seo.mjs
+
+      # Une passe par langue, en parallèle ; la langue par défaut ne touche pas aux sous-dossiers
+      # des autres langues ni à data/ (données publiées par l'admin, jamais par la sync).
+      - name: Synchroniser vers S3
+        run: |
+          aws configure set default.s3.max_concurrent_requests 50
+          node -e "import('./site.config.mjs').then(m=>console.log(m.default.locales.map(l=>l.code+':'+l.prefix).join(' ')))" > /tmp/locales
+          pids=()
+          excludes=()
+          for entry in $(cat /tmp/locales); do
+            code="${entry%%:*}"; prefix="${entry#*:}"
+            if [ -n "$prefix" ]; then
+              bash scripts/deploy-s3.sh "$SITE/$code" "s3://${S3_BUCKET}${prefix}/" & pids+=($!)
+              excludes+=(--exclude "${prefix#/}/*")
+            fi
+          done
+          first=$(cut -d" " -f1 /tmp/locales); default="${first%%:*}"
+          bash scripts/deploy-s3.sh "$SITE/$default" "s3://${S3_BUCKET}/" "${excludes[@]}" --exclude 'data/*' & pids+=($!)
+          for p in "${pids[@]}"; do wait "$p"; done
+
+      - name: Invalider CloudFront
+        run: |
+          id=$(aws cloudfront create-invalidation --distribution-id "$DISTRIBUTION_ID" \
+            --paths '/*' --query 'Invalidation.Id' --output text)
+          echo "Invalidation $id lancée (1 à 5 min, non attendue)" >> "$GITHUB_STEP_SUMMARY"

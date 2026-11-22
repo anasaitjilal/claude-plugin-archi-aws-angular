@@ -1,0 +1,17 @@
+{
+  "name": "anasaitjilal-plugins",
+  "description": "Plugins Claude Code personnels d'Anass Ait Jilal : architectures et savoir-faire réutilisables.",
+  "owner": {
+    "name": "anasaitjilal",
+    "url": "https://github.com/anasaitjilal"
+  },
+  "plugins": [
+    {
+      "name": "static-angular-aws",
+      "source": "./plugins/static-angular-aws",
+      "description": "Sites vitrines et catalogues statiques Angular sur S3 + CloudFront : scaffold, design, GSAP, perf, SEO, déploiement OIDC, WhatsApp, admin serverless.",
+      "category": "development",
+      "tags": ["angular", "aws", "static-site", "seo"]
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+.hero {
+  max-width: var(--max-width);
+  margin-inline: auto;
+  padding: clamp(var(--space-6), 10vh, var(--space-9)) var(--gutter);
+  display: grid;
+  gap: var(--space-4);
+}
+
+.hero__eyebrow {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.hero__title {
+  font-size: var(--text-display);
+  line-height: 1;
+  max-width: 16ch;
+  text-wrap: balance;
+}
+
+.hero__lead {
+  font-size: var(--text-lg);
+  max-width: 60ch;
+  color: var(--color-muted);
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}

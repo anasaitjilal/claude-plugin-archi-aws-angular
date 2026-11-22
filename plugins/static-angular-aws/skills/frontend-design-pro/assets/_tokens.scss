@@ -1,0 +1,50 @@
+// Design tokens (custom properties). Valeurs de départ neutres : les remplacer par la palette et la
+// typographie du plan de design validé (references/design-plan-template.md). Contrastes AA à vérifier.
+:root {
+  // Couleurs : un fond, une surface, une encre, un texte secondaire, UNE couleur d'action.
+  --color-bg: #f4f6f7;
+  --color-surface: #ffffff;
+  --color-ink: #13202b;
+  --color-muted: #4a5866; // >= 4.5:1 sur --color-bg
+  --color-accent: #0b6a9c; // liens et focus, >= 4.5:1 sur --color-surface
+  --color-action: #b8461f; // action principale uniquement (Commander)
+  --color-on-action: #ffffff;
+  --color-whatsapp: #1b7f4b; // vert assombri : #25d366 ne passe pas AA avec du texte blanc
+  --color-line: rgb(19 32 43 / 12%);
+
+  // Typographie : une seule famille variable auto-hébergée (woff2, sous-ensemble latin).
+  --font-sans: 'Site Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: clamp(1.0625rem, 0.5vw + 1rem, 1.25rem);
+  --text-h2: clamp(1.5rem, 1.5vw + 1rem, 2.125rem);
+  --text-h1: clamp(2rem, 3vw + 1rem, 3.25rem);
+  --text-display: clamp(2.5rem, 5vw + 1rem, 5rem);
+
+  // Espacements (base 4 px) et mise en page.
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+  --gutter: clamp(1rem, 4vw, 3rem);
+  --max-width: 1320px;
+  --radius-sm: 2px;
+  --radius-md: 8px;
+
+  // Mouvement : durées courtes, une seule courbe.
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --duration-fast: 150ms;
+  --duration-base: 300ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+    --duration-base: 0ms;
+  }
+}

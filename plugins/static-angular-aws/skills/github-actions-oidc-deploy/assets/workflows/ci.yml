@@ -1,0 +1,72 @@
+# Vérification de chaque pull request vers main : lint, tests unitaires, build, contrôles SEO et
+# CloudFront Function. Aucun accès AWS (données de test si le catalogue est sur S3).
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Lint, tests et build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: web/.nvmrc
+
+      - name: Cache node_modules
+        id: node-modules
+        uses: actions/cache@v6
+        with:
+          path: web/node_modules
+          key: node-modules-${{ runner.os }}-${{ hashFiles('web/package-lock.json', 'web/.nvmrc') }}
+
+      - name: Installer les dépendances
+        if: steps.node-modules.outputs.cache-hit != 'true'
+        working-directory: web
+        run: npm ci --no-audit --no-fund
+
+      - name: Cache de compilation Angular
+        uses: actions/cache@v6
+        with:
+          path: web/.angular/cache
+          key: angular-${{ hashFiles('web/package-lock.json') }}-${{ github.sha }}
+          restore-keys: angular-${{ hashFiles('web/package-lock.json') }}-
+
+      - name: Contrôle des données
+        run: node scripts/validate-data.mjs
+
+      - name: Lint
+        working-directory: web
+        run: npm run lint --if-present
+
+      - name: Tests unitaires
+        working-directory: web
+        run: npx ng test --watch=false
+
+      - name: Build (prérendu)
+        working-directory: web
+        run: npm run build
+
+      - name: Contrôle SEO
+        run: node scripts/check-seo.mjs
+
+      - name: CloudFront Function (générée = commitée, puis contrôlée)
+        run: |
+          node scripts/build-cloudfront-function.mjs
+          git diff --exit-code infra/cloudfront/viewer-request.js || { echo "::error::Relancer node scripts/build-cloudfront-function.mjs et commiter le résultat"; exit 1; }
+          node scripts/check-cloudfront-function.mjs

@@ -1,0 +1,45 @@
+# Rebuild nocturne : seulement si des données ont été publiées (par l'admin) depuis le dernier build,
+# pour remettre à jour les pages prérendues (SEO) et le sitemap. Sinon, rien ne tourne.
+# Nécessite data/version.json (écrit à la publication) et build-data-version.txt (écrit par deploy.yml),
+# tous deux publics : aucun accès AWS pour la comparaison.
+name: Rebuild nocturne
+
+on:
+  schedule:
+    # Cron en UTC. Minute 7 plutôt que 0 : les déclenchements à l'heure pile sont souvent retardés.
+    - cron: '7 2 * * *'
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Reconstruire même si les données n''ont pas changé'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Données publiées depuis le dernier build ?
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      changed: ${{ steps.compare.outputs.changed }}
+    steps:
+      - id: compare
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+        run: |
+          ua='Mozilla/5.0 (nightly-check)'   # curl est bloqué par la CloudFront Function
+          live=$(curl -fsS -A "$ua" "$SITE_URL/data/version.json" | jq -r .version || echo '')
+          built=$(curl -fsS -A "$ua" "$SITE_URL/build-data-version.txt" || echo '')
+          echo "publié=$live construit=$built"
+          [ -n "$live" ] && [ "$live" != "$built" ] && echo "changed=true" >> "$GITHUB_OUTPUT" || echo "changed=false" >> "$GITHUB_OUTPUT"
+
+  rebuild:
+    needs: check
+    if: needs.check.outputs.changed == 'true' || inputs.force
+    uses: ./.github/workflows/deploy.yml
+    permissions:
+      id-token: write
+      contents: read

@@ -1,0 +1,21 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "DeployAdminLambda",
+      "Effect": "Allow",
+      "Action": [
+        "lambda:UpdateFunctionCode",
+        "lambda:GetFunction",
+        "lambda:GetFunctionConfiguration",
+        "lambda:PublishVersion",
+        "lambda:GetAlias",
+        "lambda:UpdateAlias"
+      ],
+      "Resource": [
+        "arn:aws:lambda:{{AWS_REGION}}:{{AWS_ACCOUNT_ID}}:function:{{PROJECT}}-admin-api",
+        "arn:aws:lambda:{{AWS_REGION}}:{{AWS_ACCOUNT_ID}}:function:{{PROJECT}}-admin-api:*"
+      ]
+    }
+  ]
+}
