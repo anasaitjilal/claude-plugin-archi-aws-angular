@@ -1,18 +1,18 @@
-# claude-plugins
+# claude-plugin-archi-aws-angular
 
 Marketplace Claude Code personnelle (`anasaitjilal-plugins`).
 
 ## Installation
 
 ```text
-/plugin marketplace add anasaitjilal/claude-plugins
+/plugin marketplace add anasaitjilal/claude-plugin-archi-aws-angular
 /plugin install static-angular-aws@anasaitjilal-plugins
 /reload-plugins        (ou redémarrer Claude Code)
 ```
 
-En ligne de commande : `claude plugin marketplace add anasaitjilal/claude-plugins` puis
+En ligne de commande : `claude plugin marketplace add anasaitjilal/claude-plugin-archi-aws-angular` puis
 `claude plugin install static-angular-aws@anasaitjilal-plugins`.
-Depuis un clone local : `claude plugin marketplace add ./claude-plugins` (les modifications sont prises en
+Depuis un clone local : `claude plugin marketplace add ./claude-plugin-archi-aws-angular` (les modifications sont prises en
 compte au prochain démarrage ou avec `/reload-plugins`).
 
 ## Plugins

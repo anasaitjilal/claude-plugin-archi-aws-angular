@@ -8,7 +8,7 @@ Objectifs : Lighthouse mobile ≥ 90, SEO complet, coût AWS ≈ 0 $.
 Installation :
 
 ```text
-/plugin marketplace add anasaitjilal/claude-plugins
+/plugin marketplace add anasaitjilal/claude-plugin-archi-aws-angular
 /plugin install static-angular-aws@anasaitjilal-plugins
 ```
 

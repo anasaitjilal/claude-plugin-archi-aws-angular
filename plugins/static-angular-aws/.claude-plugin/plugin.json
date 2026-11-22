@@ -7,7 +7,7 @@
     "name": "Anass Ait Jilal",
     "url": "https://github.com/anasaitjilal"
   },
-  "repository": "https://github.com/anasaitjilal/claude-plugins",
+  "repository": "https://github.com/anasaitjilal/claude-plugin-archi-aws-angular",
   "license": "MIT",
   "keywords": ["angular", "ssg", "aws", "s3", "cloudfront", "github-actions", "oidc", "seo", "lighthouse", "gsap", "whatsapp"]
 }
